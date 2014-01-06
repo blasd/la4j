@@ -33,6 +33,7 @@ import org.la4j.factory.Basic2DFactory;
 import org.la4j.factory.CCSFactory;
 import org.la4j.factory.CRSFactory;
 import org.la4j.factory.Factory;
+import org.la4j.factory.ToeplitzFactory;
 import org.la4j.inversion.GaussJordanInverter;
 import org.la4j.inversion.MatrixInverter;
 import org.la4j.linear.ForwardBackSubstitutionSolver;
@@ -323,6 +324,11 @@ public final class LinearAlgebra {
     public static final Factory CCS_FACTORY = new CCSFactory();
 
     /**
+     * The {@link org.la4j.factory.ToeplitzFactory} singleton instance.
+     */
+    public static final Factory TOEPLITZ_FACTORY = new ToeplitzFactory();
+
+    /**
      * The default dense factory singleton instance. References the {@link LinearAlgebra#BASIC2D_FACTORY}.
      */
     public static final Factory DENSE_FACTORY = BASIC2D_FACTORY;
@@ -341,6 +347,6 @@ public final class LinearAlgebra {
      * The array with all factories available.
      */
     public static final Factory FACTORIES[] = {
-            BASIC1D_FACTORY, BASIC2D_FACTORY, CRS_FACTORY, CCS_FACTORY
+            BASIC1D_FACTORY, BASIC2D_FACTORY, CRS_FACTORY, CCS_FACTORY, TOEPLITZ_FACTORY
     };
 }
