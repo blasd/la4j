@@ -8,27 +8,27 @@ import org.la4j.LinearAlgebra;
 import org.la4j.factory.Factory;
 import org.la4j.matrix.dense.AbstractBasicMatrix;
 
-public class ToeplitzMatrix extends AbstractBasicMatrix {
+public class ToeplitzPureMatrix extends AbstractBasicMatrix {
 
 	private double[] firstColumn;
 	private double[] firstRow;
 
-	public ToeplitzMatrix() {
+	public ToeplitzPureMatrix() {
 		this(0, 0);
 	}
 
-	public ToeplitzMatrix(int i, int j) {
+	public ToeplitzPureMatrix(int i, int j) {
 		this(LinearAlgebra.TOEPLITZ_FACTORY, i, j);
 	}
 
-	public ToeplitzMatrix(Factory factory, int rows, int columns) {
+	public ToeplitzPureMatrix(Factory factory, int rows, int columns) {
 		super(factory, rows, columns);
 
 		firstColumn = new double[rows];
 		firstRow = new double[columns];
 	}
 
-	public ToeplitzMatrix(Factory factory, double[] firstColumn, double[] firstRow) {
+	public ToeplitzPureMatrix(Factory factory, double[] firstColumn, double[] firstRow) {
 		super(factory, firstColumn.length, firstRow.length);
 		this.firstColumn = firstColumn;
 		this.firstRow = firstRow;

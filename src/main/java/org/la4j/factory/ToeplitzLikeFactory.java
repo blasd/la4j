@@ -6,19 +6,20 @@ import java.util.Random;
 import org.la4j.LinearAlgebra;
 import org.la4j.matrix.Matrix;
 import org.la4j.matrix.source.MatrixSource;
-import org.la4j.matrix.structured.ToeplitzMatrix;
+import org.la4j.matrix.structured.ToeplitzLikeMatrix;
+import org.la4j.matrix.structured.ToeplitzPureMatrix;
 
-public class ToeplitzFactory extends BasicFactory {
+public class ToeplitzLikeFactory extends BasicFactory {
 	private static final long serialVersionUID = 1622102217414834030L;
 
 	@Override
 	public Matrix createMatrix() {
-		return new ToeplitzMatrix();
+		return new ToeplitzLikeMatrix();
 	}
 
 	@Override
 	public Matrix createMatrix(int rows, int columns) {
-		return new ToeplitzMatrix(rows, columns);
+		return new ToeplitzLikeMatrix(rows, columns);
 	}
 
 	@Override
@@ -26,8 +27,23 @@ public class ToeplitzFactory extends BasicFactory {
 		int rows = array.length;
 		int columns = array[0].length;
 
+		// Compute M+=M-'M
+		double[][] displacement = new double[rows][];
+		for (int i = 0; i < rows; i++) {
+
+			if (i == 0) {
+				displacement[i] = array[0];
+			} else {
+				displacement[i] = new double[columns];
+				
+				for (int j = 1; j < rows; j++) {
+					displacement[i][j] = array[i][j] - array[i - 1][j - 1];
+				}
+			}
+		}
+
 		if (rows == 0 || columns == 0) {
-			return new ToeplitzMatrix(rows, columns);
+			return new ToeplitzPureMatrix(rows, columns);
 		} else {
 			double[] firstColumn = new double[rows];
 			double[] firstRow = array[0];
@@ -38,14 +54,14 @@ public class ToeplitzFactory extends BasicFactory {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					if (array[i][j] != ToeplitzMatrix.get(i, firstRow, j, firstColumn)) {
+					if (array[i][j] != ToeplitzPureMatrix.get(i, firstRow, j, firstColumn)) {
 						// input is NOT a Toeplitz matrix: fallback on dense
 						return LinearAlgebra.DENSE_FACTORY.createMatrix(array);
 					}
 				}
 			}
 
-			return new ToeplitzMatrix(this, firstColumn, firstRow);
+			return new ToeplitzPureMatrix(this, firstColumn, firstRow);
 		}
 	}
 
@@ -55,7 +71,7 @@ public class ToeplitzFactory extends BasicFactory {
 		int columns = matrix.columns();
 
 		if (rows == 0 || columns == 0) {
-			return new ToeplitzMatrix(rows, columns);
+			return new ToeplitzPureMatrix(rows, columns);
 		} else {
 			double[] firstColumn = new double[rows];
 			double[] firstRow = new double[columns];
@@ -69,14 +85,14 @@ public class ToeplitzFactory extends BasicFactory {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					if (matrix.get(i, j) != ToeplitzMatrix.get(i, firstRow, j, firstColumn)) {
+					if (matrix.get(i, j) != ToeplitzPureMatrix.get(i, firstRow, j, firstColumn)) {
 						// input is NOT a Toeplitz matrix: fallback on dense
 						return LinearAlgebra.DENSE_FACTORY.createMatrix(matrix);
 					}
 				}
 			}
 
-			return new ToeplitzMatrix(this, firstColumn, firstRow);
+			return new ToeplitzPureMatrix(this, firstColumn, firstRow);
 		}
 	}
 
@@ -86,7 +102,7 @@ public class ToeplitzFactory extends BasicFactory {
 		int columns = source.columns();
 
 		if (rows == 0 || columns == 0) {
-			return new ToeplitzMatrix(rows, columns);
+			return new ToeplitzPureMatrix(rows, columns);
 		} else {
 			double[] firstColumn = new double[rows];
 			double[] firstRow = new double[columns];
@@ -100,14 +116,14 @@ public class ToeplitzFactory extends BasicFactory {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					if (source.get(i, j) != ToeplitzMatrix.get(i, firstRow, j, firstColumn)) {
+					if (source.get(i, j) != ToeplitzPureMatrix.get(i, firstRow, j, firstColumn)) {
 						// input is NOT a Toeplitz matrix: fallback on dense
 						return LinearAlgebra.DENSE_FACTORY.createMatrix(source);
 					}
 				}
 			}
 
-			return new ToeplitzMatrix(this, firstColumn, firstRow);
+			return new ToeplitzPureMatrix(this, firstColumn, firstRow);
 		}
 	}
 
@@ -119,7 +135,7 @@ public class ToeplitzFactory extends BasicFactory {
 		double[] firstRow = new double[columns];
 		Arrays.fill(firstRow, value);
 
-		return new ToeplitzMatrix(this, firstColumn, firstRow);
+		return new ToeplitzPureMatrix(this, firstColumn, firstRow);
 	}
 
 	@Override
@@ -139,7 +155,7 @@ public class ToeplitzFactory extends BasicFactory {
 			firstRow[i] = rnd.nextDouble();
 		}
 
-		return new ToeplitzMatrix(this, firstColumn, firstRow);
+		return new ToeplitzPureMatrix(this, firstColumn, firstRow);
 	}
 
 	@Override
@@ -151,12 +167,12 @@ public class ToeplitzFactory extends BasicFactory {
 			firstColumn[i] = rnd.nextDouble();
 		}
 
-		return new ToeplitzMatrix(this, firstColumn, firstColumn);
+		return new ToeplitzPureMatrix(this, firstColumn, firstColumn);
 	}
 
 	@Override
 	public Matrix createSquareMatrix(int size) {
-		return new ToeplitzMatrix(size, size);
+		return new ToeplitzPureMatrix(size, size);
 	}
 
 	@Override
@@ -165,7 +181,7 @@ public class ToeplitzFactory extends BasicFactory {
 
 		firstRowAndColumn[0] = 1D;
 
-		return new ToeplitzMatrix(this, firstRowAndColumn, firstRowAndColumn);
+		return new ToeplitzPureMatrix(this, firstRowAndColumn, firstRowAndColumn);
 	}
 
 	@Override
